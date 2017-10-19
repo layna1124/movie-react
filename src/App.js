@@ -24,12 +24,6 @@ const routes = [
     linkLabel: 'MovieList',
     linkTo: '/movie-list',
   },
-
-  {
-    linkLabel: 'Movie Review',
-    linkTo: '/movie-review',
-  },
-
 ]
 
 class App extends Component {
@@ -65,7 +59,6 @@ class App extends Component {
             <Route exact path="/" component={HomePage} />
             <Route path="/movie-list" component={MovieList} />
             <Route path="/movie-detail/:movieId" component={MovieDetail} />
-            <Route path="/movie-review" component={MovieReview} />
           </div>
         </Provider>
       </BrowserRouter >
