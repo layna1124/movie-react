@@ -3,17 +3,19 @@ import Card from '../components/card';
 import Comment from '../components/comment-ui'
 
 export default class MovieDetail extends React.Component {
+  
   constructor(props) {
     super(props)
     this.state = {
-      movieID: props.match.params.movieId // 157336 
+      movieID: props.match.params.movieId  // 157336 
     }
   }
+
   render() {
     return (
       <div>
         <Card data={this.state} />
-        <Comment /> 
+        <Comment currentUser={this.props.currentUser} movieid={this.props.match.params.movieId}/> 
       </div>
     )
   } // END render
@@ -54,7 +56,4 @@ export default class MovieDetail extends React.Component {
 
   } // end function
 
-
-
-  // } // END CLASS - MovieDetail
 }

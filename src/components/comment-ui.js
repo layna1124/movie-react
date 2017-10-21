@@ -2,6 +2,7 @@ import React from 'react';
 import {
   database,
 } from '../firebase'
+import map from 'lodash/map' 
 
 
 export default class Comment extends React.Component {
@@ -10,22 +11,46 @@ export default class Comment extends React.Component {
     super(props);
     this.state = {
       message: '',
+      messages: [], //db에서 받아올때  
+      currentUser: {
+        name:'', // user.displayName  
+        photoUrl:'', // user.photoUrl
+      }      
     }
   }
 
-  onTextChange = (e) => {
+  //불러오기 
+  //value 이벤트를 사용하여 이벤트 발생 시점에 특정 경로에 있던 내용의 정적 스냅샷을 읽을 수 있습니다
+  //val() 메소드로 snapshot의 데이터를 검색
+  getMessagesFromDB = () => {
+    database.ref('/messages' + '/' + this.props.movieid).on('value', (snapshot) => {
+      this.setState({
+        messages: map(snapshot.val(), (message => message))
+      })
+    })
+  }
+  componentDidMount = () => { 
+    database.ref('/messages' + '/' + this.props.movieid).on('value', (snapshot) => { 
+      this.setState({ //message를 인자로 받아서 로컬한 메시지스로 넣어줌 
+        messages: map(snapshot.val(), (message => message)) // 
+      })
+    })  
+  }
+
+
+  onTextChange = (e) => {//input
     this.setState({
       message: e.target.value,
     })
   }
 
-  addMessageToDB= (e) => { //form에 submit 
-    e.preventDefault();  
+  addMessageToDB= () => { //form에 submit 
+    console.log('send')
     const message = {
       text : this.state.message,
-      userName : this.state.currentUser.name 
-    }
-    database.ref('/messages').push(message);   
+      userName : this.props.currentUser.name 
+    } 
+    database.ref('/messages' + '/' + this.props.movieid).push(message);   
     this.setState({
       message:'',
     })
@@ -36,7 +61,7 @@ export default class Comment extends React.Component {
     return (
       <div className="ui container">
 
-        <form onSubmit={this.addMessageToDB} className="ui form">
+        <form className="ui form">
           <div className="field">
             <label>Comment</label>
             <textarea
@@ -47,7 +72,7 @@ export default class Comment extends React.Component {
             >
             </textarea>
           </div>
-          <div className="ui blue labeled submit icon button">
+          <div onClick={this.addMessageToDB} className="ui blue labeled submit icon button" >
             <i className="icon edit"></i>Add Comment
           </div>
         </form>
@@ -56,12 +81,14 @@ export default class Comment extends React.Component {
         <div className="ui feed">
           <h3 className="ui dividing header">Comments 1</h3>
           <div className="ui comments">
+          {this.state.messages.map((message, i) => {
+            return (
             <div className="comment">
               <a className="avatar">
-                <img src="https://semantic-ui.com/images/avatar/small/joe.jpg"/> 
+                <img src={this.props.currentUser.photoUrl}/> 
               </a>
               <div className="content">
-                <a className="author">Tom Lukic</a>
+                <a className="author">{this.state.userName}</a>
                 <div className="metadata">
                   <div className="date">2 days ago</div>
                   <div className="rating">
@@ -70,7 +97,7 @@ export default class Comment extends React.Component {
                   </div>
                 </div>
                 <div className="text">
-                I don't really want to talk too much about the film's plot or the finale as not much about the film is known t... read the rest.
+                  {message.text}
                 </div>
                 <div className="actions">
                   <a className="edit">Edit</a>
@@ -78,10 +105,13 @@ export default class Comment extends React.Component {
                 </div>
               </div>
             </div>
+            )
+          })}
           </div>
         </div>
       </div>
     )
   }
 }
+
 

@@ -12,16 +12,9 @@ export default class Home extends React.Component {
       <div className="ui container">
         <div className="ui large header">Main Slide</div>
         <div className="ui large header">Now Playing</div>
-        <div className="ui large header">Top Rated Movies</div>
-        
+        <div className="ui large header">Top Rated Movies</div>       
       </div>
     )
   } 
 }
 
-// return(
-//   <div>
-//     Main MainPage
-
-//   </div>  
-// );
