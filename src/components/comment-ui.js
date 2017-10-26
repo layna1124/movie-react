@@ -13,8 +13,9 @@ export default class Comment extends React.Component {
       message: '',
       messages: [], //db에서 받아올때  
       currentUser: {
-        name:'', // user.displayName  
+        name:'', // user.displayName 정해진것 보고써놔야편해   
         photoUrl:'', // user.photoUrl
+        email:'', // user.email
       }      
     }
   }
@@ -31,8 +32,10 @@ export default class Comment extends React.Component {
   }
   componentDidMount = () => { 
     database.ref('/messages' + '/' + this.props.movieid).on('value', (snapshot) => { 
-      this.setState({ //message를 인자로 받아서 로컬한 메시지스로 넣어줌 
-        messages: map(snapshot.val(), (message => message)) // 
+      this.setState({ //message를 인자로 받아서 로컬한 메시지스로 넣어줌 ,  
+        // 삭제위해 put부분 변경 
+        // this.setstate는 리스트형태  snapshot은 객체형태 . 키값 있어야 가져오니까  
+        messages: map(snapshot.val(), (message, key) => ({ id: key, ...message})) 
       })
     })  
   }
@@ -46,9 +49,12 @@ export default class Comment extends React.Component {
 
   addMessageToDB= () => { //form에 submit 
     console.log('send')
+    const currentTime = new Date(); 
     const message = {
+      time : currentTime.toLocaleTimeString(),
       text : this.state.message,
-      userName : this.props.currentUser.name 
+      userName : this.props.currentUser.name,
+      photoUrl: this.props.currentUser.photoUrl, 
     } 
     database.ref('/messages' + '/' + this.props.movieid).push(message);   
     this.setState({
@@ -79,18 +85,18 @@ export default class Comment extends React.Component {
         
         <div className="ui divider hidden" />
         <div className="ui feed">
-          <h3 className="ui dividing header">Comments 1</h3>
+          <h3 className="ui dividing header">Comments (개수)</h3>
           <div className="ui comments">
           {this.state.messages.map((message, i) => {
             return (
             <div className="comment">
               <a className="avatar">
-                <img src={this.props.currentUser.photoUrl}/> 
+                <img src={message.photoUrl}/> 
               </a>
               <div className="content">
-                <a className="author">{this.state.userName}</a>
+                <a className="author">{message.userName}</a>
                 <div className="metadata">
-                  <div className="date">2 days ago</div>
+                  <div className="date">{message.time}</div>
                   <div className="rating">
                     <i className="star icon"></i>
                     7.5 
@@ -101,7 +107,16 @@ export default class Comment extends React.Component {
                 </div>
                 <div className="actions">
                   <a className="edit">Edit</a>
-                  <a className="delete">Delete</a>
+                  <a
+                    className="delete"
+                    onClick={() => {
+                      console.log(message.id)
+                      database.ref('/messages' + '/' + this.props.movieid).child(message.id).remove();   
+                      //firebase삭제방법  child(키값).remove();                     
+                    }}
+                  >
+                    Delete
+                  </a>
                 </div>
               </div>
             </div>

@@ -30,6 +30,14 @@ export default class MovieDetail extends React.Component {
     this.fetchApi(url) 
   } // end component did mount function
 
+  componentDidUpdate(prevProps) { //그전값 
+    if (prevProps.match.params.movieId !== this.props.match.params.movieId) { //다를경우
+      //console.log(this.props.match.params.movieId + 'abc')
+      let url = `https://api.themoviedb.org/3/movie/${this.props.match.params.movieId}?&api_key=de78d0edbef628a9c9df8ee5782b9f03`
+      this.fetchApi(url)         
+    }
+  }//디테일페이지에서 한번더검색 , 값이바뀌는걸 감지하기위해
+
   // the api request function
   fetchApi(url) {
     fetch(url).then((res) => res.json()).then((data) => {

@@ -30,7 +30,7 @@ class SearchBar extends React.Component {
   }
 
   handleSubmit = (searchText) => {
-    this.props.dispatch(push('/search/' + searchText));
+    this.props.dispatch(push('/movie-detail/' + searchText));
     this.setState({ value: '' });
   }
 
@@ -120,4 +120,4 @@ class SearchBar extends React.Component {
   }
 }
 
-export default withRouter(SearchBar);
+export default withRouter(connect()(SearchBar));

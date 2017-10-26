@@ -1,3 +1,15 @@
+# 1025
+- main slide : react-responsive-carousel 설치  
+- main preview list : map slice(0,5) 인자두개 6개 
+- search : 버그수정 Update
+- 리뷰 삭제 : 빈객체를 push해주는 방법, del누를때 어떤객체가 지워져야하는지 알수있도록 키값넣음 
+```js
+this.setState({ 
+  messages: map(snapshot.val(), (message, key) => ({ id: key, ...message}))
+})
+database.ref('/messages' + '/' + this.props.movieid).child(message.id).remove(); 
+```
+
 # 1020 
 - MovieDetail : comment-ui 
 - firebase Login : app.js , LoginHeader,  CurrentUser  
