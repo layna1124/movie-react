@@ -1,7 +1,10 @@
-import React from 'react';
+//import React from 'react';
+import React, { Component } from 'react';
 import {
   database,
-} from '../firebase'
+    auth,
+    googleProvider,
+} from '../firebase';
 import map from 'lodash/map' 
 
 
@@ -12,6 +15,7 @@ export default class Comment extends React.Component {
     this.state = {
       message: '',
       messages: [], //db에서 받아올때  
+      star: '' , // 5 
       currentUser: {
         name:'', // user.displayName 정해진것 보고써놔야편해   
         photoUrl:'', // user.photoUrl
@@ -20,7 +24,6 @@ export default class Comment extends React.Component {
     }
   }
 
-  //불러오기 
   //value 이벤트를 사용하여 이벤트 발생 시점에 특정 경로에 있던 내용의 정적 스냅샷을 읽을 수 있습니다
   //val() 메소드로 snapshot의 데이터를 검색
   getMessagesFromDB = () => {
@@ -40,25 +43,33 @@ export default class Comment extends React.Component {
     })  
   }
 
-
-  onTextChange = (e) => {//input
+  onTextChange = (e) => {//textarea
     this.setState({
       message: e.target.value,
     })
   }
-
+  loginWithGoogle = () => {
+    auth.signInWithPopup(googleProvider)
+      .then((user) => {
+        console.log(user)
+      })
+      .catch(error => console.log(error))
+  }
   addMessageToDB= () => { //form에 submit 
     console.log('send')
     const currentTime = new Date(); 
     const message = {
       time : currentTime.toLocaleTimeString(),
-      text : this.state.message,
+      text : this.state.message, //여길 message로 꼭 써야하나?
       userName : this.props.currentUser.name,
-      photoUrl: this.props.currentUser.photoUrl, 
+      photoUrl: this.props.currentUser.photoUrl,
+      star: this.state.star, //별점 1027
     } 
+
     database.ref('/messages' + '/' + this.props.movieid).push(message);   
     this.setState({
       message:'',
+      star:'',
     })
   }
 
@@ -67,25 +78,68 @@ export default class Comment extends React.Component {
     return (
       <div className="ui container">
 
+        {/*로그인한 상태가 아닐때 currentUser가 없을때 if문 이나
+          {currentUser.name === '' ? ():()}  
+          입력하려고 하면 팝업 아니면 로그인 or 경고택스트 표시                           
+        */}   
         <form className="ui form">
           <div className="field">
-            <label>Comment</label>
+            <label>Comment</label>          
+ 
+            {this.props.currentUser.name === '' ? ( 
             <textarea
+              placeholder="로그인이 필요합니다" 
+              rows= "3"
+              onFocus={this.loginWithGoogle}             
+            >
+            </textarea>
+            ):(
+              <textarea
               onChange ={this.onTextChange}
               value={this.state.message}
               placeholder="입력하세요" 
               rows= "3"
-            >
-            </textarea>
+            >        
+            </textarea>     
+            )} 
+
+            <div>
+              <input type="radio" name="vote" value="1" checked={this.state.star === 1}
+              onChange={(e) => this.setState({ star: 1 })}
+              />
+              <label htmlFor="vote1"> 1점</label>
+              <input type="radio" name="vote" value="2" checked={this.state.star === 2}
+              onChange={(e) => this.setState({ star: 2 })}
+              />
+              <label htmlFor="vote3"> 2점</label>
+              <input type="radio" name="vote" value="3" checked={this.state.star === 3}
+              onChange={(e) => this.setState({ star: 3 })}
+              />
+              <label htmlFor="vote4"> 3점</label>
+              <input type="radio" name="vote" value="4" checked={this.state.star === 4}
+              onChange={(e) => this.setState({ star: 4 })}
+              />
+              <label htmlFor="vote5"> 4점</label>
+              <input type="radio" name="vote" value="5" checked={this.state.star === 5}
+              onChange={(e) => this.setState({ star: 5 })}
+              />
+              <label htmlFor="vote6"> 5점</label>
+            </div>
           </div>
+
           <div onClick={this.addMessageToDB} className="ui blue labeled submit icon button" >
             <i className="icon edit"></i>Add Comment
           </div>
+
         </form>
         
+        
+
         <div className="ui divider hidden" />
         <div className="ui feed">
-          <h3 className="ui dividing header">Comments (개수)</h3>
+          <h3 className="ui dividing header">Comments 
+            <em> ({this.state.messages.length})</em>
+          </h3>
           <div className="ui comments">
           {this.state.messages.map((message, i) => {
             return (
@@ -98,26 +152,33 @@ export default class Comment extends React.Component {
                 <div className="metadata">
                   <div className="date">{message.time}</div>
                   <div className="rating">
-                    <i className="star icon"></i>
-                    7.5 
+                    <i className="star icon"></i> 
+                    {message.star}점
                   </div>
                 </div>
                 <div className="text">
                   {message.text}
                 </div>
-                <div className="actions">
-                  <a className="edit">Edit</a>
-                  <a
-                    className="delete"
-                    onClick={() => {
-                      console.log(message.id)
-                      database.ref('/messages' + '/' + this.props.movieid).child(message.id).remove();   
-                      //firebase삭제방법  child(키값).remove();                     
-                    }}
-                  >
-                    Delete
-                  </a>
+                  {
+                    this.props.currentUser.name === message.userName ? (
+                  <div className="actions">
+                      <a className="edit">Edit</a>
+                      <a
+                      className="delete"
+                      onClick={() => {
+                        console.log(message.id)
+                        database.ref('/messages' + '/' + this.props.movieid).child(message.id).remove();   
+                        //firebase삭제방법  child(키값).remove();                     
+                      }}
+                    >
+                      Delete
+                    </a>
                 </div>
+                    ) : (
+                      null
+                    )
+                  }
+
               </div>
             </div>
             )
@@ -129,4 +190,12 @@ export default class Comment extends React.Component {
   }
 }
 
-
+/*
+조건부(삼항) 연산자
+test ? expression1 : expression2
+{ A === B ? ( e1 ):( e2 )}
+()=>{
+                //window.open("", "팝업", "left=10, top=10, width=200,height=100");
+                //alert('로그인이 필요합니다');
+              }
+*/

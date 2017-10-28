@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Loader from '../components/Loader';
-import { BASE_URL, NOW_URL, TOP_URL, API_KEY} from '../config';
+import { BASE_URL, NOW_URL, API_KEY} from '../config';
 
 export default class Moviedata extends React.Component {
   constructor(props) {

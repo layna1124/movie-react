@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+// import ReactDOM from 'react-dom';
 let backdropIMG;
 
 export default class Card extends React.Component {

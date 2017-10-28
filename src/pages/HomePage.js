@@ -1,14 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import Loader from '../components/Loader';
 import MainCarousel from '../components/MainCarousel';
 import NowPlaying from '../components/NowPlaying';
 
 export default class Home extends React.Component {
-  constructor(props) {
-    super(props)
-  }
-  
+
   render = () => {
     return (
       <div className="ui container">

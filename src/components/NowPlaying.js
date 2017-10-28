@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+
 import { Link } from 'react-router-dom';
-import Loader from '../components/Loader';
-import { BASE_URL, NOW_URL, TOP_URL, API_KEY} from '../config';
+import { BASE_URL, NOW_URL, API_KEY} from '../config';
 
 export default class NowPlaying extends React.Component {
   constructor(props) {
