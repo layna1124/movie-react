@@ -1,3 +1,10 @@
+# 1029 
+- 해당페이지 메뉴표시 : HeaderItem.js  className={`item ${isActive ? 'active' : ''}`}   
+ <BrowserRouter><Provider store={store}> index로 이동, <app>에 with router 사용
+- chatroom : 실시간 채팅 추가
+- 별점평균 : 10.0점 만점. 소수점
+ 
+
 # 1025
 - main slide : react-responsive-carousel 설치  
 - main preview list : map slice(0,5) 인자두개 6개 

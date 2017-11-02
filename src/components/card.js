@@ -54,6 +54,7 @@ export default class Card extends React.Component {
                   <div> Vote Average: <span className="meta-data">{data.vote}</span></div>
                 </div>
               </div>
+              
           </div>
         </div>
       </div>
@@ -69,7 +70,7 @@ export default class Card extends React.Component {
 function nestedDataToString(nestedData) {
   let nestedArray = [],
     resultString;
-  nestedArray.forEach(function (item, i) {
+    nestedArray.forEach(function (item, i) {
     nestedArray.push(item.name);
   });
   resultString = nestedArray.join(', '); // array to string

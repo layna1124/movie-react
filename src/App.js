@@ -3,24 +3,24 @@ import {
   BrowserRouter,
   //Link,
   Route,
+  withRouter,
 } from 'react-router-dom';
 import {
   Provider,
 } from 'react-redux';
 import store from './store';
 import 'semantic-ui/dist/semantic.css';
-import HeaderItem from './components/HeaderItem'
-
-import HomePage from './pages/HomePage'
-import MovieList from './pages/MovieList'
-import MovieDetail from './pages/MovieDetail'
+import HeaderItem from './components/HeaderItem';
+import HomePage from './pages/HomePage';
+import ChatRoom from './pages/ChatRoom';
+import MovieList from './pages/MovieList';
+import MovieDetail from './pages/MovieDetail';
 import SearchBar from './components/SearchBar';
 import LoginHeader from './components/LoginHeader';
 import {
   auth,
   googleProvider,
 } from './firebase';
-
 
 const routes = [
   {
@@ -30,6 +30,10 @@ const routes = [
   {
     linkLabel: 'MovieList',
     linkTo: '/movie-list',
+  },
+  {
+    linkLabel: 'ChatRoom',
+    linkTo: '/ChatRoom',
   },
 ]
 
@@ -47,7 +51,6 @@ class App extends Component {
         this.setState({
           currentUser: currentUser,
         })
-
       } else {
         this.setState({
           currentUser: {
@@ -58,6 +61,7 @@ class App extends Component {
       }
     })
   }
+
   loginWithGoogle = () => {
     auth.signInWithPopup(googleProvider)
       .then((user) => {
@@ -68,15 +72,13 @@ class App extends Component {
 
   logout = () => auth.signOut()
 
-
   render() {
     return (
-      <BrowserRouter>
-        <Provider store={store}>
           <div>
             <div className="ui container">
               <div className="ui secondary pointing menu">
                 {routes.map((route) => <HeaderItem
+                  isActive={this.props.location.pathname === route.linkTo}
                   key={route.linkLabel}
                   linkTo={route.linkTo}
                   label={route.linkLabel}
@@ -101,11 +103,10 @@ class App extends Component {
             <Route path="/movie-list" component={MovieList} />
             <Route path="/movie-detail/:movieId" render={(props) => <MovieDetail currentUser={this.state.currentUser} {...props} />} />
             {/* <Route path="/movie-review" component={MovieReview} /> */}
+            <Route path="/ChatRoom" component={ChatRoom} />
           </div>
-        </Provider>
-      </BrowserRouter >
     )
   }
 }
 
-export default App
+export default withRouter(App)

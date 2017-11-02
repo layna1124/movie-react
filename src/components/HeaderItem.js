@@ -7,10 +7,11 @@ import {
 const HeaderItem = ({
   label,
   linkTo,
+  isActive,
 }) => (
     <Link
       to={linkTo}
-      className="item"
+      className={`item ${isActive ? 'active' : ''}`}
     >
       {label}
     </Link>
